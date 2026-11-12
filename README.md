@@ -1,4 +1,4 @@
-# Punchin MX (placeholder)
+# Punchin (by Wulden)
 
 Reloj checador digital con **selfie + geotag**, web-first mobile (Apple HIG). Demo estático para GitHub Pages — sin backend, datos en `localStorage` del dispositivo.
 

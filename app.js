@@ -1,4 +1,4 @@
-/* Punchin MX demo — browser-local data, no backend */
+/* Punchin by Wulden demo — browser-local data, no backend */
 'use strict';
 
 const TZ = 'America/Mexico_City';
@@ -111,7 +111,7 @@ $$('.tab').forEach(t => t.onclick = () => {
   screen = t.dataset.screen;
   $$('.screen').forEach(s => s.classList.remove('active'));
   $(`#screen-${screen}`).classList.add('active');
-  $('#screen-title').textContent = { chequear: 'Punchin MX', midia: 'My day', admin: 'Supervisor' }[screen];
+  $('#screen-title').textContent = { chequear: 'Punchin', midia: 'My day', admin: 'Supervisor' }[screen];
   if (screen === 'midia') renderMidia();
   if (screen === 'admin') renderAdmin();
   if (screen === 'chequear') renderIdentity();
@@ -357,7 +357,7 @@ $('#btn-csv').onclick = () => {
   const csv = [cols, ...rows].map(r => r.map(v => `"${String(v ?? '').replaceAll('"', '""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = `punchinmx_${dayKey()}.csv`; a.click(); toast('CSV exported ✓');
+  a.download = `punchin_${dayKey()}.csv`; a.click(); toast('CSV exported ✓');
 };
 
 $('#btn-reset').onclick = () => {
