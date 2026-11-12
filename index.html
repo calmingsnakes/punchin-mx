@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es-MX">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
@@ -16,54 +16,54 @@
 <div class="app">
   <header class="large-title"><h1 id="screen-title">Punchin MX</h1></header>
 
-  <!-- ============ CHECAR ============ -->
+  <!-- ============ CLOCK ============ -->
   <section class="screen active" id="screen-chequear">
     <div class="card identity-card" id="identity-card">
       <div class="avatar" id="emp-avatar">?</div>
       <div class="identity-text">
-        <div class="identity-name" id="emp-name">Selecciona tu perfil</div>
+        <div class="identity-name" id="emp-name">Select your profile</div>
         <div class="identity-sub" id="office-line">—</div>
       </div>
-      <button class="chevron" id="btn-change-emp" aria-label="Cambiar">
+      <button class="chevron" id="btn-change-emp" aria-label="Change profile">
         <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
       </button>
     </div>
 
     <div class="punch-zone">
       <div class="segmented" id="dir-seg">
-        <button data-dir="ENTRADA" class="on">Entrada</button>
-        <button data-dir="SALIDA">Salida</button>
+        <button data-dir="ENTRADA" class="on">Clock in</button>
+        <button data-dir="SALIDA">Clock out</button>
       </div>
 
-      <button class="punch-btn" id="btn-punch" aria-label="Checar">
+      <button class="punch-btn" id="btn-punch" aria-label="Clock in or out">
         <span class="punch-ring"></span>
         <span class="punch-core">
           <svg width="46" height="46" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M12 7.5V12l3.2 1.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
-          <span class="punch-label">CHECAR</span>
+          <span class="punch-label">CLOCK</span>
         </span>
       </button>
 
       <div class="now-clock" id="now-clock">--:--</div>
       <div class="status-chips">
-        <span class="chip" id="chip-gps">📡 GPS: listo</span>
-        <span class="chip" id="chip-cam">📷 Cámara: lista</span>
-        <span class="chip" id="chip-fence">⭕ Geocerca: —</span>
+        <span class="chip" id="chip-gps">📡 Location: ready</span>
+        <span class="chip" id="chip-cam">📷 Camera: ready</span>
+        <span class="chip" id="chip-fence">⭕ Geofence: —</span>
       </div>
     </div>
 
     <div class="card hint-card">
-      <p>Tu check guarda <strong>selfie + coordenadas GPS</strong> reales de tu dispositivo. La VPN de la empresa no afecta la ubicación: el dato viene del chip GPS, no de tu IP.</p>
+      <p><strong>Demo only:</strong> records stay in this browser. Location comes from the device/browser and may use GPS, Wi-Fi or IP; VPN effects and accuracy need testing on company phones. No data is sent to a server.</p>
     </div>
   </section>
 
-  <!-- ============ MI DÍA ============ -->
+  <!-- ============ MY DAY ============ -->
   <section class="screen" id="screen-midia">
     <div class="stat-row">
-      <div class="stat-card"><div class="stat-v" id="day-worked">0h 00m</div><div class="stat-l">Hoy laborado</div></div>
-      <div class="stat-card"><div class="stat-v" id="day-xt">—</div><div class="stat-l">Horas extra</div></div>
-      <div class="stat-card"><div class="stat-v" id="week-worked">0h</div><div class="stat-l">Semana</div></div>
+      <div class="stat-card"><div class="stat-v" id="day-worked">0h 00m</div><div class="stat-l">Worked today</div></div>
+      <div class="stat-card"><div class="stat-v" id="day-xt">—</div><div class="stat-l">Overtime estimate</div></div>
+      <div class="stat-card"><div class="stat-v" id="week-worked">0h</div><div class="stat-l">Recent days</div></div>
     </div>
-    <h2 class="section-label">REGISTROS DE HOY</h2>
+    <h2 class="section-label">TODAY'S EVENTS</h2>
     <div class="card list" id="my-day-list"></div>
   </section>
 
@@ -71,18 +71,18 @@
   <section class="screen" id="screen-admin">
     <div id="admin-gate" class="gate">
       <div class="card gate-card">
-        <h2>Solo liderazgo</h2>
-        <p class="gate-sub">Ingresa el PIN de administración</p>
+        <h2>Supervisor preview</h2>
+        <p class="gate-sub">Demo PIN: 2468. Not secure access control.</p>
         <input class="pin-input" id="pin-input" inputmode="numeric" maxlength="4" placeholder="••••">
-        <button class="btn btn-blue" id="btn-pin">Acceder</button>
+        <button class="btn btn-blue" id="btn-pin">Open dashboard</button>
       </div>
     </div>
 
     <div id="admin-body" class="hidden">
       <div class="stat-row">
-        <div class="stat-card"><div class="stat-v" id="k-attend">0</div><div class="stat-l">Asistencias hoy</div></div>
-        <div class="stat-card"><div class="stat-v" id="k-inside">—</div><div class="stat-l">En oficina</div></div>
-        <div class="stat-card"><div class="stat-v" id="k-xt">0m</div><div class="stat-l">XT hoy</div></div>
+        <div class="stat-card"><div class="stat-v" id="k-attend">0</div><div class="stat-l">People today</div></div>
+        <div class="stat-card"><div class="stat-v" id="k-inside">—</div><div class="stat-l">At office</div></div>
+        <div class="stat-card"><div class="stat-v" id="k-xt">0m</div><div class="stat-l">Overtime est.</div></div>
       </div>
 
       <div class="filters card">
@@ -90,31 +90,31 @@
         <select id="f-emp"></select>
       </div>
 
-      <h2 class="section-label">REGISTROS (SOLO LECTURA · APPEND-ONLY)</h2>
+      <h2 class="section-label">EVENTS (READ-ONLY IN THIS UI)</h2>
       <div class="card list" id="admin-list"></div>
 
-      <h2 class="section-label">REPORTE SEMANAL LFT</h2>
+      <h2 class="section-label">RECENT HOURS · ESTIMATE ONLY</h2>
       <div class="card" id="week-report"></div>
 
       <div class="admin-actions">
-        <button class="btn btn-blue" id="btn-config">Configurar oficina</button>
-        <button class="btn btn-gray" id="btn-csv">Exportar CSV</button>
-        <button class="btn btn-red" id="btn-reset">Reiniciar demo</button>
+        <button class="btn btn-blue" id="btn-config">Office settings</button>
+        <button class="btn btn-gray" id="btn-csv">Export CSV</button>
+        <button class="btn btn-red" id="btn-reset">Reset demo</button>
       </div>
       <div class="card" id="config-card" style="display:none">
-        <label>Nombre<input id="c-name"></label>
-        <label>Latitud<input id="c-lat" inputmode="decimal"></label>
-        <label>Longitud<input id="c-lng" inputmode="decimal"></label>
-        <label>Radio (m)<input id="c-rad" inputmode="numeric"></label>
-        <button class="btn btn-blue" id="btn-save-config">Guardar</button>
+        <label>Office name<input id="c-name"></label>
+        <label>Latitude<input id="c-lat" inputmode="decimal"></label>
+        <label>Longitude<input id="c-lng" inputmode="decimal"></label>
+        <label>Radius (m)<input id="c-rad" inputmode="numeric"></label>
+        <button class="btn btn-blue" id="btn-save-config">Save</button>
       </div>
     </div>
   </section>
 
   <!-- ============ TAB BAR ============ -->
   <nav class="tabbar">
-    <button class="tab on" data-screen="chequear"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M12 8v4.5l3 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span>Checar</span></button>
-    <button class="tab" data-screen="midia"><svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M4 10.5h16M8.5 3v4M15.5 3v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>Mi día</span></button>
+    <button class="tab on" data-screen="chequear"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M12 8v4.5l3 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span>Clock</span></button>
+    <button class="tab" data-screen="midia"><svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M4 10.5h16M8.5 3v4M15.5 3v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>My day</span></button>
     <button class="tab" data-screen="admin"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/></svg><span>Admin</span></button>
   </nav>
 </div>
@@ -124,49 +124,49 @@
 
 <div class="sheet" id="sheet-emp">
   <div class="grabber"></div>
-  <h2>¿Quién está checando?</h2>
+  <h2>Who's clocking in?</h2>
   <div class="card list" id="emp-picker"></div>
-  <button class="btn btn-gray" id="btn-add-emp">+ Agregar colaborador</button>
+  <button class="btn btn-gray" id="btn-add-emp">+ Add employee</button>
 </div>
 
 <div class="sheet" id="sheet-camera">
   <div class="grabber"></div>
-  <h2>Tu selfie de verificación</h2>
-  <div class="cam-wrap"><video id="cam-video" autoplay playsinline muted></video><div class="cam-fallback" id="cam-fallback" hidden>No hay cámara disponible en este dispositivo (demo).</div></div>
-  <button class="btn btn-blue" id="btn-capture">📷 Capturar selfie</button>
-  <button class="btn btn-gray" id="btn-skip-photo">Continuar sin foto (demo)</button>
-  <button class="btn btn-plain" data-close>Cancelar</button>
+  <h2>Take a verification selfie</h2>
+  <div class="cam-wrap"><video id="cam-video" autoplay playsinline muted></video><div class="cam-fallback" id="cam-fallback" hidden>Camera unavailable on this device (demo).</div></div>
+  <button class="btn btn-blue" id="btn-capture">📷 Capture selfie</button>
+  <button class="btn btn-gray" id="btn-skip-photo">Continue without photo (demo)</button>
+  <button class="btn btn-plain" data-close>Cancel</button>
 </div>
 
 <div class="sheet" id="sheet-confirm">
   <div class="grabber"></div>
-  <h2 id="confirm-title">Confirmar salida</h2>
+  <h2 id="confirm-title">Confirm clock-out</h2>
   <div class="confirm-row">
     <div class="confirm-photo" id="confirm-photo"></div>
     <div class="confirm-data" id="confirm-data"></div>
   </div>
-  <input class="note-input" id="note-input" placeholder="Nota (opcional): ¿por qué checas fuera?">
-  <button class="btn btn-blue" id="btn-confirm">Guardar registro</button>
-  <button class="btn btn-plain" data-close>Descartar</button>
+  <input class="note-input" id="note-input" placeholder="Optional note (e.g., working off-site)">
+  <button class="btn btn-blue" id="btn-confirm">Save event</button>
+  <button class="btn btn-plain" data-close>Discard</button>
 </div>
 
 <div class="sheet" id="sheet-success">
   <div class="success-center">
     <svg class="check-svg" viewBox="0 0 52 52"><circle class="check-circle" cx="26" cy="26" r="23" fill="none"/><path class="check-mark" fill="none" d="M15 27l7 7 15-16"/></svg>
-    <h2 id="success-title">Entrada registrada</h2>
+    <h2 id="success-title">Clock-in saved</h2>
     <p class="success-sub" id="success-sub"></p>
-    <button class="btn btn-blue" data-close>Listo</button>
+    <button class="btn btn-blue" data-close>Done</button>
   </div>
 </div>
 
 <div class="sheet" id="sheet-consent">
   <div class="grabber"></div>
-  <h2>Aviso de privacidad</h2>
+  <h2>Demo data notice</h2>
   <div class="consent-body">
-    <p><strong>Punchin MX</strong> (placeholder) registra tu identidad, <strong>imagen (selfie)</strong>, <strong>ubicación GPS</strong> y horario de entrada/salida, con la finalidad de documentar tu jornada laboral conforme a la LFT (registro electrónico de asistencia, Art. 132 fracc. XXXIV) y reportarla únicamente a tu liderazgo.</p>
-    <p>Tus datos se conservan 5 años. Puedes ejercer derechos ARCO ante el responsable. La imagen y la ubicación no se usan para identificación biométrica ni se comparten con terceros.</p>
+    <p><strong>Punchin MX is a prototype.</strong> Sample events are fictional. Events you create—including a selfie, location, and time—remain in this browser's local storage. Anyone using this browser can inspect or reset them; the demo PIN is not security.</p>
+    <p>Do not enter real employee information. This is not a production privacy notice, payroll record, or legally validated attendance system. A live deployment requires the employer's approved privacy notice and data-retention policy.</p>
   </div>
-  <button class="btn btn-blue" id="btn-consent">Aceptar y continuar</button>
+  <button class="btn btn-blue" id="btn-consent">I understand · continue demo</button>
 </div>
 
 <div class="toast" id="toast"></div>

@@ -1,4 +1,4 @@
-/* Punchin MX demo — datos en localStorage, sin backend */
+/* Punchin MX demo — browser-local data, no backend */
 'use strict';
 
 const TZ = 'America/Mexico_City';
@@ -6,6 +6,7 @@ const ADMIN_PIN = '2468';
 const K = { EMP: 'pmx_emps', PUNCH: 'pmx_punches', ME: 'pmx_me', OFF: 'pmx_office', CONSENT: 'pmx_consent' };
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
+const esc = (v) => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 /* ---------- store ---------- */
 const store = {
@@ -15,7 +16,7 @@ const store = {
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const emps = () => store.get(K.EMP, []);
 const punches = () => store.get(K.PUNCH, []);
-const office = () => store.get(K.OFF, { name: 'Oficina CDMX — Polanco', lat: 19.4257, lng: -99.1733, radius: 250 });
+const office = () => store.get(K.OFF, { name: 'Mexico City office — Polanco', lat: 19.4257, lng: -99.1733, radius: 250 });
 const me = () => store.get(K.ME, null);
 
 /* ---------- geo & time ---------- */
@@ -26,13 +27,13 @@ const haversine = (a, b, c, d) => {
   return Math.round(2 * R * Math.asin(Math.sqrt(x)));
 };
 const fdate = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
-const ftime = new Intl.DateTimeFormat('es-MX', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false });
-const fshort = new Intl.DateTimeFormat('es-MX', { timeZone: TZ, weekday: 'short', day: 'numeric', month: 'short' });
+const ftime = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false });
+const fshort = new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'short', day: 'numeric', month: 'short' });
 const dayKey = (d = new Date()) => fdate.format(d);
 const timeStr = (iso) => ftime.format(new Date(iso));
 const dateStr = (iso) => fshort.format(new Date(iso));
 
-/* ---------- LFT: jornada diurna 8h, XT máx 2h/día (dobles), exceso triples ---------- */
+/* ---------- illustrative daytime hours and overtime estimates ---------- */
 function workMs(dayPunches) {
   let total = 0, open = null;
   for (const p of dayPunches.sort((a, b) => a.ts.localeCompare(b.ts))) {
@@ -77,7 +78,7 @@ function xtSplit(ms) {
         P.push({ id: uid() + Math.random(), empId: e.id, ts: t.toISOString(), dir,
           lat: +lat.toFixed(6), lng: +lng.toFixed(6), acc: Math.round(5 + Math.random() * 20),
           dist: haversine(o.lat, o.lng, lat, lng), inside: null, photo: null,
-          note: fromOffice ? 'Checó desde casa (autorizado por lider)' : '' });
+          note: fromOffice ? 'Worked from home (supervisor approved)' : '' });
         P[P.length - 1].inside = P[P.length - 1].dist <= o.radius;
       };
       mk(hIn, 'ENTRADA'); mk(Math.min(20, hIn + span), 'SALIDA');
@@ -110,7 +111,7 @@ $$('.tab').forEach(t => t.onclick = () => {
   screen = t.dataset.screen;
   $$('.screen').forEach(s => s.classList.remove('active'));
   $(`#screen-${screen}`).classList.add('active');
-  $('#screen-title').textContent = { chequear: 'Punchin MX', midia: 'Mi día', admin: 'Liderazgo' }[screen];
+  $('#screen-title').textContent = { chequear: 'Punchin MX', midia: 'My day', admin: 'Supervisor' }[screen];
   if (screen === 'midia') renderMidia();
   if (screen === 'admin') renderAdmin();
   if (screen === 'chequear') renderIdentity();
@@ -122,26 +123,26 @@ function renderIdentity() {
   if (m) {
     $('#emp-name').textContent = m.name;
     $('#emp-avatar').textContent = m.name.split(' ').map(x => x[0]).slice(0, 2).join('');
-    $('#office-line').textContent = `${o.name} · geocerca ${o.radius} m`;
-  } else { $('#emp-name').textContent = 'Selecciona tu perfil'; $('#office-line').textContent = '—'; }
+    $('#office-line').textContent = `${o.name} · geofence ${o.radius} m`;
+  } else { $('#emp-name').textContent = 'Select your profile'; $('#office-line').textContent = '—'; }
 }
 $('#btn-change-emp').onclick = () => { openEmpPicker(); };
 function openEmpPicker() {
   const list = $('#emp-picker'); list.innerHTML = '';
   emps().forEach(e => {
     const row = document.createElement('div'); row.className = 'list-row';
-    row.innerHTML = `<span class="mini-photo">👤</span><span style="flex:1;font-weight:600">${e.name}</span>`;
-    const btn = document.createElement('button'); btn.textContent = 'Elegir';
+    row.innerHTML = `<span class="mini-photo">👤</span><span style="flex:1;font-weight:600">${esc(e.name)}</span>`;
+    const btn = document.createElement('button'); btn.textContent = 'Select';
     btn.onclick = () => { store.set(K.ME, e); closeSheets(); renderIdentity(); pingGps(); };
     row.append(btn); list.append(row);
   });
   openSheet('#sheet-emp');
 }
 $('#btn-add-emp').onclick = () => {
-  const name = prompt('Nombre del colaborador:'); if (!name?.trim()) return;
+  const name = prompt('Employee name (demo data only):'); if (!name?.trim()) return;
   const E = emps(); E.push({ id: uid(), name: name.trim() });
   store.set(K.EMP, E); store.set(K.ME, E[E.length - 1]);
-  closeSheets(); renderIdentity(); pingGps(); toast(`Hola, ${name.trim()} 👋`);
+  closeSheets(); renderIdentity(); pingGps(); toast(`Hello, ${name.trim()} 👋`);
 };
 
 /* ---------- clock ---------- */
@@ -161,14 +162,14 @@ async function pingGps() {
   if (!me()) return;
   const g = await getLocation();
   if (g) {
-    chip.textContent = `📡 GPS activo ±${g.acc} m`; chip.className = 'chip ok';
+    chip.textContent = `📡 Location ±${g.acc} m`; chip.className = 'chip ok';
     const d = haversine(office().lat, office().lng, g.lat, g.lng);
     const inF = d <= office().radius;
-    fence.textContent = inF ? '⭕ Dentro de la oficina' : `⭕ A ${(d / 1000).toFixed(1)} km de la oficina`;
+    fence.textContent = inF ? '⭕ At the office' : `⭕ ${(d / 1000).toFixed(1)} km from office`;
     fence.className = 'chip ' + (inF ? 'ok' : 'warn');
   } else {
-    chip.textContent = '📡 GPS sin permiso (modo demo)'; chip.className = 'chip warn';
-    fence.textContent = '⭕ Ubicación simulada'; fence.className = 'chip warn';
+    chip.textContent = '📡 Location unavailable (demo)'; chip.className = 'chip warn';
+    fence.textContent = '⭕ Simulated location'; fence.className = 'chip warn';
   }
 }
 
@@ -207,7 +208,7 @@ $('#btn-punch').onclick = async () => {
   await startCam();
   openSheet('#sheet-camera');
 };
-$('#btn-consent').onclick = () => { store.set(K.CONSENT, true); closeSheets(); toast('Consentimiento registrado ✓'); };
+$('#btn-consent').onclick = () => { store.set(K.CONSENT, true); closeSheets(); toast('Demo notice acknowledged ✓'); };
 $('#btn-capture').onclick = () => { if (stream) pending.photo = freeze(); stopCam(); confirmPunch(); };
 $('#btn-skip-photo').onclick = () => { pending.photo = null; stopCam(); confirmPunch(); };
 
@@ -221,17 +222,17 @@ async function confirmPunch() {
   }
   const dist = haversine(o.lat, o.lng, g.lat, g.lng);
   pending = { ...pending, ...g, dist, inside: dist <= o.radius };
-  $('#confirm-title').textContent = dir === 'ENTRADA' ? 'Confirmar entrada' : 'Confirmar salida';
+  $('#confirm-title').textContent = dir === 'ENTRADA' ? 'Confirm clock-in' : 'Confirm clock-out';
   $('#confirm-photo').innerHTML = pending.photo ? `<img src="${pending.photo}">` : '<span style="font-size:34px">👤</span>';
   const fence = pending.inside
-    ? `<span class="badge-of">🏢 En oficina</span>`
-    : `<span class="badge-fu">⚠️ Fuera de geocerca</span> · a ${(pending.dist / 1000).toFixed(1)} km`;
+    ? `<span class="badge-of">🏢 At office</span>`
+    : `<span class="badge-fu">⚠️ Outside geofence</span> · ${(pending.dist / 1000).toFixed(1)} km away`;
   $('#confirm-data').innerHTML = `
     <div class="big">${timeStr(new Date().toISOString())}</div>
-    <div>${dateStr(new Date().toISOString())} · CDMX</div>
-    <div><b>${me().name}</b></div>
+    <div>${dateStr(new Date().toISOString())} · Mexico City time</div>
+    <div><b>${esc(me().name)}</b></div>
     <div>${fence}</div>
-    <div>±${pending.acc} m ${pending.demo ? '· <span class="badge-fu">GPS demo</span>' : '· GPS real'}</div>`;
+    <div>±${pending.acc} m ${pending.demo ? '· <span class="badge-fu">SIMULATED LOCATION</span>' : '· device location'}</div>`;
   $('#note-input').value = '';
   openSheet('#sheet-confirm');
 }
@@ -240,10 +241,11 @@ $('#btn-confirm').onclick = () => {
   const p = { id: uid(), empId: me().id, ts: new Date().toISOString(), ...pending,
     note: $('#note-input').value.trim(), tz: TZ };
   const P = punches(); P.push(p); store.set(K.PUNCH, P);
-  $('#success-title').textContent = p.dir === 'ENTRADA' ? 'Entrada registrada ✓' : 'Salida registrada ✓';
-  $('#success-sub').innerHTML = `${timeStr(p.ts)} · ${p.inside ? 'en oficina' : 'fuera de geocerca'}` +
-    (!p.inside ? '<br><b>Liderazgo verá este registro marcado.</b>' : '') +
-    '<br>Registro inmutable (append-only).';
+  $('#success-title').textContent = p.dir === 'ENTRADA' ? 'Clock-in saved ✓' : 'Clock-out saved ✓';
+  $('#success-sub').innerHTML = `${timeStr(p.ts)} · ${p.inside ? 'at office' : 'outside geofence'}` +
+    (p.demo ? '<br><b>Simulated location — not evidence of attendance.</b>' : '') +
+    (!p.inside ? '<br><b>Marked for supervisor review.</b>' : '') +
+    '<br>Stored only in this browser (demo).';
   pending = null;
   openSheet('#sheet-success');
   pingGps();
@@ -264,18 +266,18 @@ function renderMidia() {
   const byDay = {}; wk.forEach(p => (byDay[dayKey(new Date(p.ts))] ??= []).push(p));
   $('#week-worked').textContent = hm(Object.values(byDay).reduce((a, d) => a + workMs(d), 0));
   const list = $('#my-day-list'); list.innerHTML = '';
-  if (!todays.length) { list.innerHTML = '<div class="list-row" style="color:var(--ink2)">Aún no checas hoy.</div>'; return; }
+  if (!todays.length) { list.innerHTML = '<div class="list-row" style="color:var(--ink2)">No events today.</div>'; return; }
   todays.forEach(p => list.append(punchRow(p, false)));
 }
 function punchRow(p, withName) {
   const e = emps().find(x => x.id === p.empId);
   const r = document.createElement('div'); r.className = 'list-row';
-  const geo = p.inside ? '<span class="badge-of">🏢 oficina</span>' : `<span class="badge-fu">⚠️ ${(p.dist / 1000).toFixed(1)} km</span>`;
+  const geo = p.demo ? '<span class="badge-fu">SIMULATED LOCATION</span>' : p.inside ? '<span class="badge-of">🏢 office</span>' : `<span class="badge-fu">⚠️ ${(p.dist / 1000).toFixed(1)} km away</span>`;
   const photo = p.photo ? `<img class="mini-photo" src="${p.photo}">` : `<span class="mini-photo">👤</span>`;
   r.innerHTML = `${photo}
     <span class="p-time">${timeStr(p.ts)}</span>
     <span class="p-dir ${p.dir === 'ENTRADA' ? 'IN' : 'OUT'}">${p.dir === 'ENTRADA' ? 'IN' : 'OUT'}</span>
-    <span class="p-loc">${withName ? `<b>${e?.name ?? '?'}</b><br>` : ''}${dateStr(p.ts)} · ${geo}${p.note ? `<br>“${p.note}”` : ''}</span>`;
+    <span class="p-loc">${withName ? `<b>${esc(e?.name ?? '?')}</b><br>` : ''}${dateStr(p.ts)} · ${geo}${p.note ? `<br>“${esc(p.note)}”` : ''}</span>`;
   return r;
 }
 
@@ -299,17 +301,17 @@ function renderAdmin() {
   const days = [...new Set(P.map(p => dayKey(new Date(p.ts))))].sort().reverse();
   const fD = $('#f-day'), fE = $('#f-emp');
   const keepD = fD.value, keepE = fE.value;
-  fD.innerHTML = `<option value="">Todos los días</option>` + days.map(d => `<option ${d === today ? 'selected' : ''}>${d}</option>`).join('');
-  fE.innerHTML = `<option value="">Todos</option>` + emps().map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  fD.innerHTML = `<option value="">All days</option>` + days.map(d => `<option ${d === today ? 'selected' : ''}>${d}</option>`).join('');
+  fE.innerHTML = `<option value="">All employees</option>` + emps().map(e => `<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('');
   if (keepD) fD.value = keepD; if (keepE) fE.value = keepE;
   const show = P.filter(p => (!fD.value || dayKey(new Date(p.ts)) === fD.value) && (!fE.value || p.empId === fE.value)).slice(0, 120);
   const list = $('#admin-list'); list.innerHTML = '';
-  if (!show.length) list.innerHTML = '<div class="list-row" style="color:var(--ink2)">Sin registros.</div>';
+  if (!show.length) list.innerHTML = '<div class="list-row" style="color:var(--ink2)">No events.</div>';
   show.forEach(p => list.append(punchRow(p, true)));
 
-  // reporte semanal LFT (últimos 7 días por empleado)
+  // Recent recorded days; illustrative totals, not a payroll calculation.
   const days7 = [...new Set(P.map(p => dayKey(new Date(p.ts))))].sort().reverse().slice(0, 7);
-  let html = `<table><tr><th>Colaborador</th>${days7.map(d => `<th>${d.slice(5)}</th>`).join('')}<th>Sem.</th></tr>`;
+  let html = `<table><tr><th>Employee</th>${days7.map(d => `<th>${d.slice(5)}</th>`).join('')}<th>Total</th></tr>`;
   for (const e of emps()) {
     let wk = 0; const cells = days7.map(d => {
       const dp = P.filter(p => p.empId === e.id && dayKey(new Date(p.ts)) === d);
@@ -321,13 +323,13 @@ function renderAdmin() {
       return `<td class="${cls}">${hrs}</td>`;
     }).join('');
     const wkCls = wk > 48 * 3600000 ? 'xt3' : '';
-    html += `<tr><td>${e.name}</td>${cells}<td class="${wkCls}">${(wk / 3600000).toFixed(1)}h</td></tr>`;
+    html += `<tr><td>${esc(e.name)}</td>${cells}<td class="${wkCls}">${(wk / 3600000).toFixed(1)}h</td></tr>`;
   }
-  $('#week-report').innerHTML = html + '</table><p style="font-size:11px;color:var(--ink2);margin-top:8px">Naranja = XT dobles (≤2h/día) · Rojo = XT triples (>2h) o semana >48h (LFT 59-68).</p>';
+  $('#week-report').innerHTML = html + '</table><p style="font-size:11px;color:var(--ink2);margin-top:8px">Illustrative hours only. Orange = over 8h/day; red = over 10h/day or 48h across displayed days. Not a payroll or legal determination.</p>';
 }
 $('#btn-pin').onclick = () => {
   if ($('#pin-input').value === ADMIN_PIN) { sessionStorage.setItem('pmx_admin', '1'); renderAdmin(); }
-  else toast('PIN incorrecto');
+  else toast('Incorrect demo PIN');
 };
 [f => f].forEach(() => {});
 document.addEventListener('input', e => {
@@ -342,24 +344,24 @@ $('#btn-config').onclick = () => {
 };
 $('#btn-save-config').onclick = () => {
   store.set(K.OFF, { name: $('#c-name').value, lat: +$('#c-lat').value, lng: +$('#c-lng').value, radius: +$('#c-rad').value });
-  toast('Geocerca actualizada ✓'); renderIdentity(); renderAdmin();
+  toast('Geofence updated ✓'); renderIdentity(); renderAdmin();
 };
 
 /* CSV */
 $('#btn-csv').onclick = () => {
-  const cols = ['fecha_CDMX', 'hora_CDMX', 'tipo', 'colaborador', 'lat', 'lng', 'precision_m', 'distancia_m', 'dentro_geocerca', 'nota'];
+  const cols = ['date_Mexico_City', 'time_Mexico_City', 'event', 'employee', 'lat', 'lng', 'accuracy_m', 'distance_m', 'inside_geofence', 'simulated_gps', 'note'];
   const rows = punches().sort((a, b) => a.ts.localeCompare(b.ts)).map(p => {
     const e = emps().find(x => x.id === p.empId);
-    return [fdate.format(new Date(p.ts)), timeStr(p.ts), p.dir, e?.name ?? p.empId, p.lat, p.lng, p.acc, p.dist, p.inside ? 'sí' : 'NO', (p.note || '').replaceAll(',', ';')];
+    return [fdate.format(new Date(p.ts)), timeStr(p.ts), p.dir === 'ENTRADA' ? 'CLOCK_IN' : 'CLOCK_OUT', e?.name ?? p.empId, p.lat, p.lng, p.acc, p.dist, p.inside ? 'YES' : 'NO', p.demo ? 'YES' : 'NO', p.note || ''];
   });
-  const csv = [cols, ...rows].map(r => r.join(',')).join('\n');
+  const csv = [cols, ...rows].map(r => r.map(v => `"${String(v ?? '').replaceAll('"', '""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = `punchinmx_${dayKey()}.csv`; a.click(); toast('CSV exportado ✓');
+  a.download = `punchinmx_${dayKey()}.csv`; a.click(); toast('CSV exported ✓');
 };
 
 $('#btn-reset').onclick = () => {
-  if (!confirm('¿Borrar datos del demo?')) return;
+  if (!confirm('Delete all browser-local demo data?')) return;
   Object.values(K).forEach(k => localStorage.removeItem(k));
   location.reload();
 };

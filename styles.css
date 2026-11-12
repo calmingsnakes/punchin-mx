@@ -111,6 +111,7 @@ body{color:var(--ink);overscroll-behavior:none;-webkit-font-smoothing:antialiase
 .cam-wrap{position:relative;border-radius:14px;overflow:hidden;background:#111;aspect-ratio:3/4;max-height:46vh;margin:0 auto 14px;width:100%}
 .cam-wrap video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 .cam-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:13px;text-align:center;padding:20px}
+.cam-fallback[hidden]{display:none}
 .sheet .note-input{width:100%;font:400 14px var(--font);padding:12px 14px;border:1px solid var(--sep);border-radius:10px;background:var(--card);color:var(--ink);margin:12px 0;outline:none}
 .sheet .btn{margin-bottom:8px}
 
